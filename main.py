@@ -17,11 +17,17 @@ update_datetime = update_datetime_element.text
 day_1_min_temp = int(day_1_min_temp_element.text)
 day_1_max_temp = int(day_1_max_temp_element.text)
 day_1_alert = day_1_alert_element.attrib.get("value")
+day1_perceived_temps = {
+    ora.get('ora'): ora.find("temp[@temp_type='perc']").text for ora in root.findall(".//previsione[@idday='1']")
+    if ora.get('ora') != 'giorno'
+}
 
-print(f"Meteo di {city_desc}\nAggiornato al {update_datetime}")
+print(f"Meteo di {city_desc}\nAggiornato al {update_datetime}\n")
 print(f"Temperatura\n   max: {day_1_max_temp} {'grado' if day_1_max_temp == 1 or day_1_max_temp == -1 else 'gradi'}")
 print(f"   min: {day_1_min_temp} {'grado' if day_1_min_temp == 1 or day_1_min_temp == -1 else 'gradi'}")
-print(f"Livello allerta {day_1_alert}" if day_1_alert != 'nessuno' else "Nessuna allerta")
+print(f"\nPercepita")
+[print(f"{ora.replace('2', ' tardi').rjust(17)}: {perc_temp}") for ora, perc_temp in day1_perceived_temps.items()]
+print(f"\nLivello allerta {day_1_alert}" if day_1_alert != 'nessuno' else "\nNessuna allerta")
 if day_1_alert != 'nessuno':
     print(f"Rischio")
     [print(f"   {element.get('descr')}: {element.get('value')}") for element in day_1_element.findall(".//rischio")
